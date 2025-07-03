@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Financière Personnelle</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>💰 FinanceApp</h2>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" class="nav-link active" data-view="dashboard">
+                        📊 Tableau de bord
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" data-view="transactions">
+                        💳 Transactions
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" data-view="forecasts">
+                        📈 Prévisions
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" data-view="budgets">
+                        💼 Budgets
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" data-view="reports">
+                        📋 Rapports
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" data-view="settings">
+                        ⚙️ Paramètres
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div class="view active" id="dashboard">
+                <div class="view-header">
+                    <h1>Tableau de bord</h1>
+                    <button class="btn btn--primary" id="addTransactionBtn">
+                        + Ajouter une transaction
+                    </button>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="card summary-card">
+                        <div class="card__body">
+                            <div class="summary-card-content">
+                                <div class="summary-icon">💰</div>
+                                <div>
+                                    <h3>Solde Total</h3>
+                                    <p class="summary-amount" id="totalBalance">10 800 €</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="card__body">
+                            <div class="summary-card-content">
+                                <div class="summary-icon income">📈</div>
+                                <div>
+                                    <h3>Revenus du mois</h3>
+                                    <p class="summary-amount income" id="monthlyIncome">+ 3 250 €</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="card__body">
+                            <div class="summary-card-content">
+                                <div class="summary-icon expense">📉</div>
+                                <div>
+                                    <h3>Dépenses du mois</h3>
+                                    <p class="summary-amount expense" id="monthlyExpenses">- 1 070 €</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="card chart-card">
+                        <div class="card__body">
+                            <h3>Répartition des dépenses</h3>
+                            <canvas id="expensePieChart" width="400" height="200" aria-label="Graphique des dépenses" role="img"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card__body">
+                            <h3>Évolution des soldes</h3>
+                            <canvas id="balanceLineChart" width="400" height="200" aria-label="Graphique de l'évolution des soldes" role="img"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Dernières transactions</h3>
+                    </div>
+                    <div class="card__body">
+                        <div class="transactions-list" id="recentTransactions">
+                            <!-- Transactions will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budget Alerts -->
+                <div class="budget-alerts" id="budgetAlerts">
+                    <!-- Budget alerts will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Transactions View -->
+            <div class="view" id="transactions">
+                <div class="view-header">
+                    <h1>Transactions</h1>
+                    <button class="btn btn--primary" id="addTransactionBtn2">
+                        + Ajouter une transaction
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="card filters-card">
+                    <div class="card__body">
+                        <div class="filters">
+                            <div class="form-group">
+                                <select class="form-control" id="filterCategory">
+                                    <option value="">Toutes les catégories</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" id="filterType">
+                                    <option value="">Tous les types</option>
+                                    <option value="revenu">Revenus</option>
+                                    <option value="depense">Dépenses</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control" id="filterAccount">
+                                    <option value="">Tous les comptes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions List -->
+                <div class="card">
+                    <div class="card__body">
+                        <div class="transactions-table" id="transactionsTable">
+                            <!-- Transactions table will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forecasts View -->
+            <div class="view" id="forecasts">
+                <div class="view-header">
+                    <h1>Prévisions Financières</h1>
+                </div>
+                <div class="card">
+                    <div class="card__body">
+                        <h3>Prévisions sur 6 mois</h3>
+                        <canvas id="forecastChart" width="400" height="200" aria-label="Graphique des prévisions financières" role="img"></canvas>
+                    </div>
+                </div>
+                <div class="forecast-summary" id="forecastSummary">
+                    <!-- Forecast summary will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Budgets View -->
+            <div class="view" id="budgets">
+                <div class="view-header">
+                    <h1>Gestion des Budgets</h1>
+                    <button class="btn btn--primary" id="addBudgetBtn">
+                        + Nouveau budget
+                    </button>
+                </div>
+                <div class="budgets-grid" id="budgetsGrid">
+                    <!-- Budget cards will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Reports View -->
+            <div class="view" id="reports">
+                <div class="view-header">
+                    <h1>Rapports</h1>
+                </div>
+                <div class="charts-section">
+                    <div class="card chart-card">
+                        <div class="card__body">
+                            <h3>Évolution mensuelle</h3>
+                            <canvas id="monthlyChart" width="400" height="200" aria-label="Graphique de l'évolution mensuelle" role="img"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card__body">
+                            <h3>Comparaison par catégories</h3>
+                            <canvas id="categoryChart" width="400" height="200" aria-label="Graphique de comparaison par catégories" role="img"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div class="view" id="settings">
+                <div class="view-header">
+                    <h1>Paramètres</h1>
+                </div>
+                <div class="settings-grid">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Mes Comptes</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="accounts-list" id="accountsList">
+                                <!-- Accounts will be populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Catégories</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="categories-list" id="categoriesList">
+                                <!-- Categories will be populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div class="modal" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Ajouter une transaction</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <form id="transactionForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select class="form-control" id="transactionType" required>
+                            <option value="revenu">Revenu</option>
+                            <option value="depense">Dépense</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Montant (€)</label>
+                        <input type="number" class="form-control" id="transactionAmount" step="0.01" required autocomplete="off" inputmode="decimal">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Catégorie</label>
+                        <select class="form-control" id="transactionCategory" required>
+                            <!-- Categories will be populated by JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <input type="text" class="form-control" id="transactionDescription" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control" id="transactionDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Compte</label>
+                        <select class="form-control" id="transactionAccount" required>
+                            <!-- Accounts will be populated by JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="isRecurring">
+                            Transaction récurrente
+                        </label>
+                    </div>
+                    <div class="form-group recurring-options" id="recurringOptions" style="display: none;">
+                        <label class="form-label">Fréquence</label>
+                        <select class="form-control" id="recurringFrequency">
+                            <option value="hebdomadaire">Hebdomadaire</option>
+                            <option value="mensuelle">Mensuelle</option>
+                            <option value="annuelle">Annuelle</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn--secondary" id="cancelModal">Annuler</button>
+                    <button type="submit" class="btn btn--primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Budget Modal -->
+    <div class="modal" id="budgetModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nouveau budget</h3>
+                <button class="modal-close" id="closeBudgetModal">&times;</button>
+            </div>
+            <form id="budgetForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Catégorie</label>
+                        <select class="form-control" id="budgetCategory" required>
+                            <!-- Categories will be populated by JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Limite mensuelle (€)</label>
+                        <input type="number" class="form-control" id="budgetLimit" step="0.01" required autocomplete="off" inputmode="decimal">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn--secondary" id="cancelBudgetModal">Annuler</button>
+                    <button type="submit" class="btn btn--primary">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js" defer></script>
+</body>
+</html>
