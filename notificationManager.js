@@ -28,49 +28,10 @@ class NotificationManager {
         return notification;
     }
 
-    // Notification dans l'app
-    showAppNotification(message, type = 'info', duration = 3000) {
-        const notification = document.createElement('div');
-        notification.className = `notification notification--${type}`;
-        notification.textContent = message;
-        
-        // Styles pour les notifications
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            z-index: 10000;
-            animation: slideIn 0.3s ease-out;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        `;
-        
-        if (type === 'success') {
-            notification.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
-        } else if (type === 'error') {
-            notification.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
-        } else if (type === 'warning') {
-            notification.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
-        } else {
-            notification.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
-        }
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease-in';
-            setTimeout(() => {
-                if (document.body.contains(notification)) {
-                    document.body.removeChild(notification);
-                }
-            }, 300);
-        }, duration);
-
-        return notification;
-    }
+    // Notification dans l'app (supprimée du main process)
+    // showAppNotification(message, type = 'info', duration = 3000) {
+    //     ...
+    // }
 
     // Vérifier les alertes de budget
     checkBudgetAlerts() {
@@ -96,14 +57,14 @@ class NotificationManager {
     // Alerte de dépassement de budget
     showBudgetWarning(budget, percentage) {
         const message = `Budget ${budget.categorie} : ${percentage.toFixed(1)}% utilisé (${this.formatCurrency(budget.utilise)}/${this.formatCurrency(budget.limite)})`;
-        
         this.showSystemNotification(
             '⚠️ Alerte Budget',
             message,
             { timeoutType: 'never' }
         );
-        
-        this.showAppNotification(message, 'warning', 5000);
+        if (this.sendToRenderer) {
+            this.sendToRenderer('show-app-notification', message, 'warning', 5000);
+        }
     }
 
     // Alerte de dépassement de budget
@@ -116,7 +77,9 @@ class NotificationManager {
             { timeoutType: 'never' }
         );
         
-        this.showAppNotification(message, 'error', 8000);
+        if (this.sendToRenderer) {
+            this.sendToRenderer('show-app-notification', message, 'error', 8000);
+        }
     }
 
     // Notification de transaction ajoutée
@@ -125,13 +88,17 @@ class NotificationManager {
         const message = `${transaction.description} : ${this.formatCurrency(transaction.montant)}`;
         
         this.showSystemNotification(type, message);
-        this.showAppNotification(message, 'success');
+        if (this.sendToRenderer) {
+            this.sendToRenderer('show-app-notification', message, 'success');
+        }
     }
 
     // Notification de transaction supprimée
     showTransactionDeleted(transaction) {
         const message = `Transaction supprimée : ${transaction.description}`;
-        this.showAppNotification(message, 'info');
+        if (this.sendToRenderer) {
+            this.sendToRenderer('show-app-notification', message, 'info');
+        }
     }
 
     // Notification de solde faible
@@ -230,14 +197,18 @@ class NotificationManager {
         if (!this.settings) this.settings = {};
         this.settings.notifications = true;
         this.dataManager.saveData();
-        this.showAppNotification('Notifications activées', 'success');
+        if (this.sendToRenderer) {
+            this.sendToRenderer('show-app-notification', 'Notifications activées', 'success');
+        }
     }
 
     disableNotifications() {
         if (!this.settings) this.settings = {};
         this.settings.notifications = false;
         this.dataManager.saveData();
-        this.showAppNotification('Notifications désactivées', 'info');
+        if (this.sendToRenderer) {
+            this.sendToRenderer('show-app-notification', 'Notifications désactivées', 'info');
+        }
     }
 
     // Formater la monnaie
@@ -256,6 +227,11 @@ class NotificationManager {
             }
         });
         this.notifications = [];
+    }
+
+    // Ajouter une méthode pour envoyer des notifications au renderer
+    setRendererSender(sender) {
+        this.sendToRenderer = sender;
     }
 }
 

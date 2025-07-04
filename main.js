@@ -3,6 +3,7 @@ const path = require('path');
 const isDev = require('electron-is-dev');
 const DataManager = require('./dataManager');
 const NotificationManager = require('./notificationManager');
+const db = require('./database');
 
 let mainWindow;
 let dataManager;
@@ -364,3 +365,27 @@ ipcMain.handle('enable-notifications', () => {
 ipcMain.handle('disable-notifications', () => {
     notificationManager.disableNotifications();
 });
+
+// IPC handlers pour la base SQLite
+ipcMain.handle('getComptes', () => db.getComptes());
+ipcMain.handle('addCompte', (event, compte) => db.addCompte(compte));
+ipcMain.handle('updateCompte', (event, compte) => db.updateCompte(compte));
+ipcMain.handle('deleteCompte', (event, id) => db.deleteCompte(id));
+
+ipcMain.handle('getCategories', () => db.getCategories());
+ipcMain.handle('addCategorie', (event, cat) => db.addCategorie(cat));
+ipcMain.handle('updateCategorie', (event, cat) => db.updateCategorie(cat));
+ipcMain.handle('deleteCategorie', (event, id) => db.deleteCategorie(id));
+
+ipcMain.handle('getTransactions', () => db.getTransactions());
+ipcMain.handle('addTransaction', (event, t) => db.addTransaction(t));
+ipcMain.handle('updateTransaction', (event, t) => db.updateTransaction(t));
+ipcMain.handle('deleteTransaction', (event, id) => db.deleteTransaction(id));
+
+ipcMain.handle('getBudgets', () => db.getBudgets());
+ipcMain.handle('addBudget', (event, b) => db.addBudget(b));
+ipcMain.handle('updateBudget', (event, b) => db.updateBudget(b));
+ipcMain.handle('deleteBudget', (event, id) => db.deleteBudget(id));
+
+ipcMain.handle('getSettings', () => db.getSettings());
+ipcMain.handle('setSetting', (event, key, value) => db.setSetting(key, value));

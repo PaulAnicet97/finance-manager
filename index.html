@@ -99,39 +99,75 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Charts Section -->
-                <div class="charts-section">
-                    <div class="card chart-card">
+                    <div class="card summary-card">
                         <div class="card__body">
-                            <h3>Répartition des dépenses</h3>
-                            <canvas id="expensePieChart" width="400" height="200" aria-label="Graphique des dépenses" role="img"></canvas>
-                        </div>
-                    </div>
-                    <div class="card chart-card">
-                        <div class="card__body">
-                            <h3>Évolution des soldes</h3>
-                            <canvas id="balanceLineChart" width="400" height="200" aria-label="Graphique de l'évolution des soldes" role="img"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Transactions -->
-                <div class="card">
-                    <div class="card__header">
-                        <h3>Dernières transactions</h3>
-                    </div>
-                    <div class="card__body">
-                        <div class="transactions-list" id="recentTransactions">
-                            <!-- Transactions will be populated by JS -->
+                            <div class="summary-card-content">
+                                <div class="summary-icon net">💼</div>
+                                <div>
+                                    <h3>Solde net du mois</h3>
+                                    <p class="summary-amount" id="netIncome">+ 2 180 €</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Budget Alerts -->
-                <div class="budget-alerts" id="budgetAlerts">
-                    <!-- Budget alerts will be populated by JS -->
+                <!-- Dashboard Content -->
+                <div class="dashboard-content">
+                    <!-- Charts Section -->
+                    <div class="charts-section">
+                        <div class="card chart-card">
+                            <div class="card__header">
+                                <h3>Répartition des dépenses</h3>
+                                <div class="chart-actions">
+                                    <button class="btn btn--small btn--secondary" onclick="window.app.showView('reports')">
+                                        Voir plus
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card__body">
+                                <canvas id="expensePieChart" width="400" height="200" aria-label="Graphique des dépenses" role="img"></canvas>
+                            </div>
+                        </div>
+                        <div class="card chart-card">
+                            <div class="card__header">
+                                <h3>Évolution des soldes</h3>
+                                <div class="chart-actions">
+                                    <button class="btn btn--small btn--secondary" onclick="window.app.showView('forecasts')">
+                                        Prévisions
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card__body">
+                                <canvas id="balanceLineChart" width="400" height="200" aria-label="Graphique de l'évolution des soldes" role="img"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions & Budget Alerts -->
+                    <div class="dashboard-sidebar">
+                        <!-- Recent Transactions -->
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>Dernières transactions</h3>
+                                <div class="card-actions">
+                                    <button class="btn btn--small btn--primary" onclick="window.app.showTransactionModal()">
+                                        + Ajouter
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card__body">
+                                <div class="transactions-list" id="recentTransactions">
+                                    <!-- Transactions will be populated by JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Budget Alerts -->
+                        <div class="budget-alerts" id="budgetAlerts">
+                            <!-- Budget alerts will be populated by JS -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -149,11 +185,13 @@
                     <div class="card__body">
                         <div class="filters">
                             <div class="form-group">
+                                <label for="filterCategory" class="filter-label"><span>Catégorie</span></label>
                                 <select class="form-control" id="filterCategory">
                                     <option value="">Toutes les catégories</option>
                                 </select>
                             </div>
                             <div class="form-group">
+                                <label for="filterType" class="filter-label"><span>Type</span></label>
                                 <select class="form-control" id="filterType">
                                     <option value="">Tous les types</option>
                                     <option value="revenu">Revenus</option>
@@ -161,9 +199,15 @@
                                 </select>
                             </div>
                             <div class="form-group">
+                                <label for="filterAccount" class="filter-label"><span>Compte</span></label>
                                 <select class="form-control" id="filterAccount">
                                     <option value="">Tous les comptes</option>
                                 </select>
+                            </div>
+                            <div class="form-group filter-actions">
+                                <button class="btn btn--small btn--secondary" id="resetFiltersBtn" style="display:none;">
+                                    Réinitialiser
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -182,16 +226,37 @@
             <!-- Forecasts View -->
             <div class="view" id="forecasts">
                 <div class="view-header">
-                    <h1>Prévisions Financières</h1>
+                    <h1>Prévisions</h1>
                 </div>
-                <div class="card">
-                    <div class="card__body">
-                        <h3>Prévisions sur 6 mois</h3>
-                        <canvas id="forecastChart" width="400" height="200" aria-label="Graphique des prévisions financières" role="img"></canvas>
+                <div class="forecasts-grid">
+                    <div class="forecast-card" id="upcomingFixedExpenses">
+                        <div class="card__header"><h3>Dépenses fixes à venir</h3></div>
+                        <div class="card__body">
+                            <ul></ul>
+                            <div class="empty-state" style="display:none;">Aucune dépense fixe à venir.</div>
+                        </div>
+                    </div>
+                    <div class="forecast-card" id="estimatedVariableExpenses">
+                        <div class="card__header"><h3>Estimation variables</h3></div>
+                        <div class="card__body">
+                            <ul></ul>
+                            <div class="empty-state" style="display:none;">Aucune estimation disponible.</div>
+                        </div>
+                    </div>
+                    <div class="forecast-card" id="savingsForecast">
+                        <div class="card__header"><h3>Prévision d'épargne</h3></div>
+                        <div class="card__body">
+                            <ul></ul>
+                            <div class="empty-state" style="display:none;">Aucune prévision d'épargne.</div>
+                        </div>
                     </div>
                 </div>
-                <div class="forecast-summary" id="forecastSummary">
-                    <!-- Forecast summary will be populated by JS -->
+                <div class="forecast-card" style="max-width:900px;margin:0 auto;">
+                    <div class="card__header"><h3>Projection globale</h3></div>
+                    <div class="card__body">
+                        <canvas id="forecastGlobalChart" height="120"></canvas>
+                        <div class="empty-state" style="display:none;">Pas de données pour la projection globale.</div>
+                    </div>
                 </div>
             </div>
 
@@ -235,23 +300,85 @@
                     <h1>Paramètres</h1>
                 </div>
                 <div class="settings-grid">
+                    <!-- Paramètres généraux -->
                     <div class="card">
-                        <div class="card__header">
-                            <h3>Mes Comptes</h3>
-                        </div>
+                        <div class="card__header">Paramètres Généraux</div>
                         <div class="card__body">
-                            <div class="accounts-list" id="accountsList">
-                                <!-- Accounts will be populated by JS -->
-                            </div>
+                            <form id="generalSettingsForm">
+                                <div class="form-group">
+                                    <label class="form-label">Devise</label>
+                                    <select class="form-control" id="currencySetting">
+                                        <option value="EUR">Euro (€)</option>
+                                        <option value="USD">Dollar US ($)</option>
+                                        <option value="GBP">Livre Sterling (£)</option>
+                                        <option value="CHF">Franc Suisse (CHF)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Langue</label>
+                                    <select class="form-control" id="languageSetting">
+                                        <option value="fr">Français</option>
+                                        <option value="en">English</option>
+                                        <option value="es">Español</option>
+                                        <option value="de">Deutsch</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="notificationsSetting">
+                                        Activer les notifications
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="autoBackupSetting">
+                                        Sauvegarde automatique
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Thème</label>
+                                    <select class="form-control" id="themeSetting">
+                                        <option value="auto">Automatique</option>
+                                        <option value="light">Clair</option>
+                                        <option value="dark">Sombre</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn--primary">Sauvegarder</button>
+                            </form>
                         </div>
                     </div>
+                    <!-- Gestion des comptes -->
                     <div class="card">
                         <div class="card__header">
-                            <h3>Catégories</h3>
+                            Mes Comptes
+                            <button class="btn btn--secondary" id="addAccountBtn" style="float:right;">+ Ajouter</button>
                         </div>
                         <div class="card__body">
-                            <div class="categories-list" id="categoriesList">
-                                <!-- Categories will be populated by JS -->
+                            <div class="accounts-list" id="accountsList"></div>
+                        </div>
+                    </div>
+                    <!-- Gestion des catégories -->
+                    <div class="card">
+                        <div class="card__header">
+                            Catégories
+                            <button class="btn btn--secondary" id="addCategoryBtn" style="float:right;">+ Ajouter</button>
+                        </div>
+                        <div class="card__body">
+                            <div class="categories-list" id="categoriesList"></div>
+                        </div>
+                    </div>
+                    <!-- Import/Export -->
+                    <div class="card">
+                        <div class="card__header">Données</div>
+                        <div class="card__body">
+                            <div class="form-group">
+                                <button class="btn btn--secondary" id="exportDataBtn">Exporter les données</button>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn--secondary" id="importDataBtn">Importer des données</button>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn--danger" id="resetDataBtn">Réinitialiser toutes les données</button>
                             </div>
                         </div>
                     </div>
@@ -346,6 +473,75 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn--secondary" id="cancelBudgetModal">Annuler</button>
                     <button type="submit" class="btn btn--primary">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Account Modal -->
+    <div class="modal" id="accountModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="accountModalTitle">Nouveau compte</h3>
+                <button class="modal-close" id="closeAccountModal">&times;</button>
+            </div>
+            <form id="accountForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Nom du compte</label>
+                        <input type="text" class="form-control" id="accountName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type de compte</label>
+                        <select class="form-control" id="accountType" required>
+                            <option value="courant">Compte courant</option>
+                            <option value="epargne">Épargne</option>
+                            <option value="especes">Espèces</option>
+                            <option value="credit">Carte de crédit</option>
+                            <option value="investissement">Investissement</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Solde initial (€)</label>
+                        <input type="number" class="form-control" id="accountBalance" step="0.01" value="0" required autocomplete="off" inputmode="decimal">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn--secondary" id="cancelAccountModal">Annuler</button>
+                    <button type="submit" class="btn btn--primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="categoryModalTitle">Nouvelle catégorie</h3>
+                <button class="modal-close" id="closeCategoryModal">&times;</button>
+            </div>
+            <form id="categoryForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Nom de la catégorie</label>
+                        <input type="text" class="form-control" id="categoryName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select class="form-control" id="categoryType" required>
+                            <option value="revenu">Revenu</option>
+                            <option value="depense">Dépense</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Couleur</label>
+                        <input type="color" class="form-control" id="categoryColor" value="#3b82f6">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn--secondary" id="cancelCategoryModal">Annuler</button>
+                    <button type="submit" class="btn btn--primary">Enregistrer</button>
                 </div>
             </form>
         </div>

@@ -28,4 +28,34 @@ contextBridge.exposeInMainWorld('electronAPI', {
     
     // Supprimer les listeners
     removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel)
+});
+
+contextBridge.exposeInMainWorld('api', {
+  // Comptes
+  getComptes: () => ipcRenderer.invoke('getComptes'),
+  addCompte: (compte) => ipcRenderer.invoke('addCompte', compte),
+  updateCompte: (compte) => ipcRenderer.invoke('updateCompte', compte),
+  deleteCompte: (id) => ipcRenderer.invoke('deleteCompte', id),
+
+  // Catégories
+  getCategories: () => ipcRenderer.invoke('getCategories'),
+  addCategorie: (cat) => ipcRenderer.invoke('addCategorie', cat),
+  updateCategorie: (cat) => ipcRenderer.invoke('updateCategorie', cat),
+  deleteCategorie: (id) => ipcRenderer.invoke('deleteCategorie', id),
+
+  // Transactions
+  getTransactions: () => ipcRenderer.invoke('getTransactions'),
+  addTransaction: (t) => ipcRenderer.invoke('addTransaction', t),
+  updateTransaction: (t) => ipcRenderer.invoke('updateTransaction', t),
+  deleteTransaction: (id) => ipcRenderer.invoke('deleteTransaction', id),
+
+  // Budgets
+  getBudgets: () => ipcRenderer.invoke('getBudgets'),
+  addBudget: (b) => ipcRenderer.invoke('addBudget', b),
+  updateBudget: (b) => ipcRenderer.invoke('updateBudget', b),
+  deleteBudget: (id) => ipcRenderer.invoke('deleteBudget', id),
+
+  // Settings
+  getSettings: () => ipcRenderer.invoke('getSettings'),
+  setSetting: (key, value) => ipcRenderer.invoke('setSetting', key, value),
 }); 
